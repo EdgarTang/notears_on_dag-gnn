@@ -1,0 +1,5 @@
+# Mac Os System file
+.DS_Store
+# Idea editor files
+.idea/*
+.idea
