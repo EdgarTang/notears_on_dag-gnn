@@ -1,22 +1,3 @@
-from train import *
-
-f = open('trueG', 'w')
-matG = np.matrix(nx.to_numpy_array(ground_truth_G))
-for line in matG:
-    np.savetxt(f, line, fmt='%.5f')
-f.closed
-
-f1 = open('predG', 'w')
-matG1 = np.matrix(origin_A.data.clone().numpy())
-for line in matG1:
-    np.savetxt(f1, line, fmt='%.5f')
-f1.closed
-
-
-if log is not None:
-    print(save_folder)
-    log.close()
-
 import numpy as np
 import scipy.linalg as slin
 import scipy.optimize as sopt
@@ -116,14 +97,12 @@ if __name__ == '__main__':
     B_true = utils.simulate_dag(d, s0, graph_type)
 
     # W_true = utils.simulate_parameter(B_true)
-    W_true = simulatedG
-    # W_true = np.loadtxt('simulatedG.csv', delimiter=' ')
+    W_true = np.loadtxt('simulatedG.csv', delimiter=' ')
 
     np.savetxt('W_true.csv', W_true, delimiter=',')
 
     # X = utils.simulate_linear_sem(W_true, n, sem_type)
-    # X = np.loadtxt('simulatedX.csv', delimiter=' ')
-    X = simulatedX
+    X = np.loadtxt('simulatedX.csv', delimiter=' ')
 
     np.savetxt('X.csv', X, delimiter=',')
 
