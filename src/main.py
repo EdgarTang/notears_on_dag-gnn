@@ -117,13 +117,13 @@ if __name__ == '__main__':
 
     # W_true = np.loadtxt('simulatedG.csv', delimiter=' ')
     # W_true = utils.simulate_parameter(B_true)
-    W_true = ground_truth_G
+    W_true = nx.to_numpy_array(ground_truth_G)
 
     np.savetxt('W_true.csv', W_true, delimiter=',')
 
     # X = np.loadtxt('simulatedX.csv', delimiter=' ')
     # X = utils.simulate_linear_sem(W_true, n, sem_type)
-    X = ground_truth_X
+    X = ground_truth_X[:, :, 0]
 
     np.savetxt('X.csv', X, delimiter=',')
 
