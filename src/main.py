@@ -115,15 +115,15 @@ if __name__ == '__main__':
 
     B_true = utils.simulate_dag(d, s0, graph_type)
 
-    # W_true = utils.simulate_parameter(B_true)
-    W_true = simulatedG
     # W_true = np.loadtxt('simulatedG.csv', delimiter=' ')
+    # W_true = utils.simulate_parameter(B_true)
+    W_true = ground_truth_G
 
     np.savetxt('W_true.csv', W_true, delimiter=',')
 
-    # X = utils.simulate_linear_sem(W_true, n, sem_type)
     # X = np.loadtxt('simulatedX.csv', delimiter=' ')
-    X = simulatedX
+    # X = utils.simulate_linear_sem(W_true, n, sem_type)
+    X = ground_truth_X
 
     np.savetxt('X.csv', X, delimiter=',')
 
