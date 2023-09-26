@@ -1,3 +1,5 @@
+# notears: utils.py
+# src/notears/locally_connected.py
 import torch
 import torch.nn as nn
 import math

@@ -1,3 +1,5 @@
+# notears: nonlinear.py
+# src/notears/nonlinear.py
 from notears.locally_connected import LocallyConnected
 from notears.lbfgsb_scipy import LBFGSBScipy
 from notears.trace_expm import trace_expm

@@ -1,3 +1,5 @@
+# notears: utils.py
+# src/notears/utils.py
 import numpy as np
 from scipy.special import expit as sigmoid
 import igraph as ig

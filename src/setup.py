@@ -1,3 +1,5 @@
+# notears: trace_expm.py
+# src/setup.py
 from setuptools import setup
 
 

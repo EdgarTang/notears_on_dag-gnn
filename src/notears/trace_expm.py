@@ -1,3 +1,5 @@
+# notears: trace_expm.py
+# src/notears/trace_expm.py
 import torch
 import numpy as np
 import scipy.linalg as slin
