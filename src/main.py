@@ -109,19 +109,15 @@ def notears_linear(X, lambda1, loss_type, max_iter=100, h_tol=1e-8, rho_max=1e+1
 if __name__ == '__main__':
     from notears import utils
     utils.set_random_seed(1)
-
     # n, d, s0, graph_type, sem_type = 10, 10, 10, 'ER', 'gauss'
     n, d, s0, graph_type, sem_type = 100, 10, 10, 'ER', 'gauss'
 
     B_true = utils.simulate_dag(d, s0, graph_type)
-
-    # W_true = np.loadtxt('simulatedG.csv', delimiter=' ')
     # W_true = utils.simulate_parameter(B_true)
     W_true = nx.to_numpy_array(ground_truth_G)
 
     np.savetxt('W_true.csv', W_true, delimiter=',')
 
-    # X = np.loadtxt('simulatedX.csv', delimiter=' ')
     # X = utils.simulate_linear_sem(W_true, n, sem_type)
     X = ground_truth_X[:, :, 0]
 
@@ -131,8 +127,17 @@ if __name__ == '__main__':
 
     assert utils.is_dag(W_est)
     np.savetxt('W_est.csv', W_est, delimiter=',')
-    acc = utils.count_accuracy(B_true, W_est != 0)
+    acc = utils.count_accuracy(W_true, W_est != 0)
+    print('dag-gnn:---------')
     print(acc)
+
+    W_true_2 = utils.simulate_parameter(B_true)
+    X_2 = utils.simulate_linear_sem(W_true_2, n, sem_type)
+    W_est_2 = notears_linear(X_2, lambda1=0.1, loss_type='l2')
+    assert utils.is_dag(W_est_2)
+    acc_2 = utils.count_accuracy(B_true, W_est_2 != 0)
+    print('notears:---------')
+    print(acc_2)
 
 # 100, 20, 20,
 # {'fdr': 0.0, 'tpr': 0.95, 'fpr': 0.0, 'shd': 1, 'nnz': 19}
