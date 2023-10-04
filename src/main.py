@@ -1,17 +1,5 @@
+# src/main.py
 from train import *
-
-f = open('trueG', 'w')
-matG = np.matrix(nx.to_numpy_array(ground_truth_G))
-for line in matG:
-    np.savetxt(f, line, fmt='%.5f')
-f.closed
-
-f1 = open('predG', 'w')
-matG1 = np.matrix(origin_A.data.clone().numpy())
-for line in matG1:
-    np.savetxt(f1, line, fmt='%.5f')
-f1.closed
-
 
 if log is not None:
     print(save_folder)
@@ -21,6 +9,7 @@ import numpy as np
 import scipy.linalg as slin
 import scipy.optimize as sopt
 from scipy.special import expit as sigmoid
+import csv
 
 
 def notears_linear(X, lambda1, loss_type, max_iter=100, h_tol=1e-8, rho_max=1e+16, w_threshold=0.3):
@@ -104,7 +93,12 @@ def notears_linear(X, lambda1, loss_type, max_iter=100, h_tol=1e-8, rho_max=1e+1
     W_est[np.abs(W_est) < w_threshold] = 0
     return W_est
 
-
+def write_to_csv(accuracies, filename):
+    with open(filename, mode='a', newline='') as file:
+        writer = csv.writer(file)
+        # 确保我们写入的数据顺序正确
+        row = [accuracies[key] for key in ['fdr', 'tpr', 'fpr', 'shd', 'nnz']]
+        writer.writerow(row)
 
 if __name__ == '__main__':
     from notears import utils
@@ -112,7 +106,6 @@ if __name__ == '__main__':
     # n, d, s0, graph_type, sem_type = 10, 10, 10, 'ER', 'gauss'
     n, d, s0, graph_type, sem_type = 100, 10, 10, 'ER', 'gauss'
 
-    B_true = utils.simulate_dag(d, s0, graph_type)
     # W_true = utils.simulate_parameter(B_true)
     W_true = nx.to_numpy_array(ground_truth_G)
 
@@ -128,22 +121,16 @@ if __name__ == '__main__':
     assert utils.is_dag(W_est)
     np.savetxt('W_est.csv', W_est, delimiter=',')
     acc = utils.count_accuracy(W_true, W_est != 0)
-    print('dag-gnn:---------')
+    print('dag-gnn data:---------')
     print(acc)
 
-    W_true_2 = utils.simulate_parameter(B_true)
-    X_2 = utils.simulate_linear_sem(W_true_2, n, sem_type)
-    W_est_2 = notears_linear(X_2, lambda1=0.1, loss_type='l2')
-    assert utils.is_dag(W_est_2)
-    acc_2 = utils.count_accuracy(B_true, W_est_2 != 0)
-    print('notears:---------')
-    print(acc_2)
+    write_to_csv(acc, 'notears.csv')
 
-# 100, 20, 20,
-# {'fdr': 0.0, 'tpr': 0.95, 'fpr': 0.0, 'shd': 1, 'nnz': 19}
-
-# 10, 10, 10,
-# {'fdr': 0.6666666666666666, 'tpr': 0.5, 'fpr': 0.2857142857142857, 'shd': 14, 'nnz': 15}
-
-
-# 10, 10, 10, trueG simulatedG.csv
+    # B_true = utils.simulate_dag(d, s0, graph_type)
+    # W_true_2 = utils.simulate_parameter(B_true)
+    # X_2 = utils.simulate_linear_sem(W_true_2, n, sem_type)
+    # W_est_2 = notears_linear(X_2, lambda1=0.1, loss_type='l2')
+    # assert utils.is_dag(W_est_2)
+    # acc_2 = utils.count_accuracy(B_true, W_est_2 != 0)
+    # print('notears data:---------')
+    # print(acc_2)

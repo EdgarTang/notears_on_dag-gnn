@@ -92,18 +92,15 @@ if __name__ == '__main__':
     from notears import utils
     utils.set_random_seed(1)
 
-    # n, d, s0, graph_type, sem_type = 10, 10, 10, 'ER', 'gauss'
-    n, d, s0, graph_type, sem_type = 100, 10, 10, 'ER', 'gauss'
+    n, d, s0, graph_type, sem_type = 10, 10, 10, 'ER', 'gauss'
 
     B_true = utils.simulate_dag(d, s0, graph_type)
 
-    # W_true = utils.simulate_parameter(B_true)
-    W_true = np.loadtxt('simulatedG.csv', delimiter=' ')
+    W_true = utils.simulate_parameter(B_true)
 
     np.savetxt('W_true.csv', W_true, delimiter=',')
 
-    # X = utils.simulate_linear_sem(W_true, n, sem_type)
-    X = np.loadtxt('simulatedX.csv', delimiter=' ')
+    X = utils.simulate_linear_sem(W_true, n, sem_type)
 
     np.savetxt('X.csv', X, delimiter=',')
 

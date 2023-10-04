@@ -1,4 +1,4 @@
-# DAG-GNN: utils.py
+# DAG-GNN: modules.py
 # src/modules.py
 import torch
 import torch.nn as nn

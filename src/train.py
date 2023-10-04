@@ -1,4 +1,4 @@
-# DAG-GNN: utils.py
+# DAG-GNN: train.py
 # src/train.py
 ''''
 Main function for traininng DAG-GNN
@@ -19,6 +19,8 @@ import datetime
 import torch.optim as optim
 from torch.optim import lr_scheduler
 import math
+
+import csv
 
 # import numpy as np
 from utils import *
@@ -432,6 +434,13 @@ h_tol = args.h_tol
 k_max_iter = int(args.k_max_iter)
 h_A_old = np.inf
 
+def write_to_csv(accuracies, filename):
+    with open(filename, mode='a', newline='') as file:
+        writer = csv.writer(file)
+        # 确保我们写入的数据顺序正确
+        row = [accuracies[key] for key in ['fdr', 'tpr', 'fpr', 'shd', 'nnz']]
+        writer.writerow(row)
+
 try:
     for step_k in range(k_max_iter):
         while c_A < 1e+20:
@@ -482,33 +491,38 @@ try:
     print (best_ELBO_graph)
     print(nx.to_numpy_array(ground_truth_G))
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(best_ELBO_graph))
+    write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_ELBO_graph.csv')
     print('Best ELBO Graph Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
 
     print(best_NLL_graph)
     print(nx.to_numpy_array(ground_truth_G))
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(best_NLL_graph))
+    write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_NLL_graph.csv')
     print('Best NLL Graph Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
-
 
     print (best_MSE_graph)
     print(nx.to_numpy_array(ground_truth_G))
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(best_MSE_graph))
+    write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_MSE_graph.csv')
     print('Best MSE Graph Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
 
     graph = origin_A.data.clone().numpy()
     graph[np.abs(graph) < 0.1] = 0
     # print(graph)
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(graph))
+    write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold01.csv')
     print('threshold 0.1, Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
 
     graph[np.abs(graph) < 0.2] = 0
     # print(graph)
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(graph))
+    write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold02.csv')
     print('threshold 0.2, Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
 
     graph[np.abs(graph) < 0.3] = 0
     # print(graph)
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(graph))
+    write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold03.csv')
     print('threshold 0.3, Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
 
 
@@ -517,30 +531,36 @@ except KeyboardInterrupt:
     print(best_ELBO_graph)
     print(nx.to_numpy_array(ground_truth_G))
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(best_ELBO_graph))
+    write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_ELBO_graph.csv')
     print('Best ELBO Graph Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
 
     print(best_NLL_graph)
     print(nx.to_numpy_array(ground_truth_G))
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(best_NLL_graph))
+    write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_NLL_graph.csv')
     print('Best NLL Graph Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
 
     print(best_MSE_graph)
     print(nx.to_numpy_array(ground_truth_G))
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(best_MSE_graph))
+    write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_MSE_graph.csv')
     print('Best MSE Graph Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
 
     graph = origin_A.data.clone().numpy()
     graph[np.abs(graph) < 0.1] = 0
     # print(graph)
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(graph))
+    write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold01.csv')
     print('threshold 0.1, Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
 
     graph[np.abs(graph) < 0.2] = 0
     # print(graph)
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(graph))
+    write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold02.csv')
     print('threshold 0.2, Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
 
     graph[np.abs(graph) < 0.3] = 0
     # print(graph)
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(graph))
+    write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold03.csv')
     print('threshold 0.3, Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
