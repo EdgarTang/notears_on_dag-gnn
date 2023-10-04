@@ -449,17 +449,18 @@ def write_to_csv(accuracies, filename):
     if data:
         headers = data[0]
         for row in data[1:]:  # Skip the header row
-            # Keep the data_variable_size value (the first column) and update other values
-            # Note: Ensure that data_variable_size is a string
-            for key in accuracies.keys():
-                if key in headers:
-                    col_idx = headers.index(key)
-                    row[col_idx] = str(accuracies[key])
+            if row[1] == 'N/A':  # If the second column (index 1) is 'N/A'
+                for key in accuracies.keys():
+                    if key in headers:
+                        col_idx = headers.index(key)
+                        row[col_idx] = str(accuracies[key])
+                break  # Exit the loop after updating the first row with 'N/A'
 
     # Write the data back to the file
     with open(filepath, 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(data)
+
 
 try:
     for step_k in range(k_max_iter):
