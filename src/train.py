@@ -434,7 +434,6 @@ h_tol = args.h_tol
 k_max_iter = int(args.k_max_iter)
 h_A_old = np.inf
 
-
 def write_to_csv(accuracies, filename):
     output_dir = 'out'
     os.makedirs(output_dir, exist_ok=True)
@@ -449,19 +448,18 @@ def write_to_csv(accuracies, filename):
 
     if data:
         headers = data[0]
-        for row in data[1:]:
-            if row:
-                data_variable_size = float(accuracies['data_variable_size'])
-                if float(row[0]) == data_variable_size:
-                    for key in accuracies:
-                        if key in headers:
-                            col_idx = headers.index(key)
-                            row[col_idx] = str(accuracies[key])
+        for row in data[1:]:  # Skip the header row
+            # Keep the data_variable_size value (the first column) and update other values
+            # Note: Ensure that data_variable_size is a string
+            for key in accuracies.keys():
+                if key in headers:
+                    col_idx = headers.index(key)
+                    row[col_idx] = str(accuracies[key])
 
+    # Write the data back to the file
     with open(filepath, 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(data)
-
 
 try:
     for step_k in range(k_max_iter):

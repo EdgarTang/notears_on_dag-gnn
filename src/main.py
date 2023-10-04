@@ -116,7 +116,6 @@ if __name__ == '__main__':
     acc = utils.count_accuracy(W_true, W_est != 0)
     print('dag-gnn data:---------')
     print(acc)
-
     write_to_csv(acc, 'notears.csv')
 
     # B_true = utils.simulate_dag(d, s0, graph_type)
