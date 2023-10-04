@@ -102,17 +102,17 @@ if __name__ == '__main__':
     # W_true = utils.simulate_parameter(B_true)
     W_true = nx.to_numpy_array(ground_truth_G)
 
-    np.savetxt('W_true.csv', W_true, delimiter=',')
+    # np.savetxt('W_true.csv', W_true, delimiter=',')
 
     # X = utils.simulate_linear_sem(W_true, n, sem_type)
     X = ground_truth_X[:, :, 0]
 
-    np.savetxt('X.csv', X, delimiter=',')
+    # np.savetxt('X.csv', X, delimiter=',')
 
     W_est = notears_linear(X, lambda1=0.1, loss_type='l2')
 
     assert utils.is_dag(W_est)
-    np.savetxt('W_est.csv', W_est, delimiter=',')
+    # np.savetxt('W_est.csv', W_est, delimiter=',')
     acc = utils.count_accuracy(W_true, W_est != 0)
     print('dag-gnn data:---------')
     print(acc)

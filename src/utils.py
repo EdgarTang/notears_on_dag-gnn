@@ -411,17 +411,17 @@ def load_data(args, batch_size=1000, suffix='', debug = False):
     if args.data_type == 'synthetic':
         # generate data
         G = simulate_random_dag(d, degree, graph_type)
-        f = open('simulatedG.csv', 'w')
-        matG = np.matrix(nx.to_numpy_array(G))
-        for line in matG:
-            np.savetxt(f, line, fmt='%.5f')
-        f.close()
+        # f = open('simulatedG.csv', 'w')
+        # matG = np.matrix(nx.to_numpy_array(G))
+        # for line in matG:
+            # np.savetxt(f, line, fmt='%.5f')
+        # f.close()
 
         X = simulate_sem(G, n, x_dims, sem_type, linear_type)
-        with open('simulatedX.csv', 'w') as f:
-            for slice_idx in range(X.shape[2]):
-                np.savetxt(f, X[:, :, slice_idx], fmt='%f')
-                f.write("\n")  # Optional: Add a newline between slices
+        # with open('simulatedX.csv', 'w') as f:
+        #     for slice_idx in range(X.shape[2]):
+        #         np.savetxt(f, X[:, :, slice_idx], fmt='%f')
+        #         f.write("\n")  # Optional: Add a newline between slices
 
     elif args.data_type == 'discrete':
         # get benchmark discrete data
