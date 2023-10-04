@@ -434,12 +434,18 @@ h_tol = args.h_tol
 k_max_iter = int(args.k_max_iter)
 h_A_old = np.inf
 
+
 def write_to_csv(accuracies, filename):
-    with open(filename, mode='a', newline='') as file:
+    output_dir = 'out'
+    os.makedirs(output_dir, exist_ok=True)
+
+    filepath = os.path.join(output_dir, filename)
+
+    with open(filepath, mode='a', newline='') as file:
         writer = csv.writer(file)
-        # 确保我们写入的数据顺序正确
         row = [accuracies[key] for key in ['fdr', 'tpr', 'fpr', 'shd', 'nnz']]
         writer.writerow(row)
+
 
 try:
     for step_k in range(k_max_iter):

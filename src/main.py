@@ -94,9 +94,13 @@ def notears_linear(X, lambda1, loss_type, max_iter=100, h_tol=1e-8, rho_max=1e+1
     return W_est
 
 def write_to_csv(accuracies, filename):
-    with open(filename, mode='a', newline='') as file:
+    output_dir = 'out'
+    os.makedirs(output_dir, exist_ok=True)
+
+    filepath = os.path.join(output_dir, filename)
+
+    with open(filepath, mode='a', newline='') as file:
         writer = csv.writer(file)
-        # 确保我们写入的数据顺序正确
         row = [accuracies[key] for key in ['fdr', 'tpr', 'fpr', 'shd', 'nnz']]
         writer.writerow(row)
 
