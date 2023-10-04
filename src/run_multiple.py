@@ -1,3 +1,4 @@
+import subprocess
 import csv
 import os
 
@@ -25,6 +26,6 @@ step = 10
 create_csv_files(start, end, step)
 
 
-# for i in range(start, (end + 1), step):
-#     command = ["python", "notears_on_dag-gnn/src/main.py", "--data_variable_size=" + str(i)]
-#     subprocess.run(command)
+for i in range(start, (end + 1), step):
+    command = ["python", "notears_on_dag-gnn/src/main.py", "--data_variable_size=" + str(i)]
+    subprocess.run(command)

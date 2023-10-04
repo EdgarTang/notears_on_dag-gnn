@@ -441,10 +441,26 @@ def write_to_csv(accuracies, filename):
 
     filepath = os.path.join(output_dir, filename)
 
-    with open(filepath, mode='a', newline='') as file:
+    data = []
+    if os.path.exists(filepath):
+        with open(filepath, 'r', newline='') as file:
+            reader = csv.reader(file)
+            data = [row for row in reader]
+
+    if data:
+        headers = data[0]
+        for row in data[1:]:
+            if row:
+                data_variable_size = float(accuracies['data_variable_size'])
+                if float(row[0]) == data_variable_size:
+                    for key in accuracies:
+                        if key in headers:
+                            col_idx = headers.index(key)
+                            row[col_idx] = str(accuracies[key])
+
+    with open(filepath, 'w', newline='') as file:
         writer = csv.writer(file)
-        row = [accuracies[key] for key in ['fdr', 'tpr', 'fpr', 'shd', 'nnz']]
-        writer.writerow(row)
+        writer.writerows(data)
 
 
 try:

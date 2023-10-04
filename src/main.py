@@ -93,17 +93,6 @@ def notears_linear(X, lambda1, loss_type, max_iter=100, h_tol=1e-8, rho_max=1e+1
     W_est[np.abs(W_est) < w_threshold] = 0
     return W_est
 
-def write_to_csv(accuracies, filename):
-    output_dir = 'out'
-    os.makedirs(output_dir, exist_ok=True)
-
-    filepath = os.path.join(output_dir, filename)
-
-    with open(filepath, mode='a', newline='') as file:
-        writer = csv.writer(file)
-        row = [accuracies[key] for key in ['fdr', 'tpr', 'fpr', 'shd', 'nnz']]
-        writer.writerow(row)
-
 if __name__ == '__main__':
     from notears import utils
     utils.set_random_seed(1)
