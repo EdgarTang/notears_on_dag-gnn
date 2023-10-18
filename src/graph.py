@@ -15,8 +15,12 @@ def generate_plots(folder_path):
         for file in csv_files:
             file_path = os.path.join(folder_path, file)
             data = pd.read_csv(file_path)
-            x_data = data.iloc[:, 0]
-            plt.plot(x_data, data[col_name], marker='o', linestyle='-', label=file.strip('.csv'))
+
+            # Group by 'data_variable_size' and calculate mean
+            data_avg = data.groupby('data_variable_size').mean().reset_index()
+
+            x_data = data_avg.iloc[:, 0]
+            plt.plot(x_data, data_avg[col_name], marker='o', linestyle='-', label=file.strip('.csv'))
 
         plt.title(col_name)
         plt.xlabel('Number of nodes')
@@ -24,5 +28,6 @@ def generate_plots(folder_path):
         plt.legend(loc='upper right')
         plt.savefig(os.path.join(folder_path, f"{col_name}.png"))
         plt.close()
+
 
 generate_plots('out')
