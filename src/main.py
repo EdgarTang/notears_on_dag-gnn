@@ -105,7 +105,7 @@ if __name__ == '__main__':
     # np.savetxt('W_true.csv', W_true, delimiter=',')
 
     # X = utils.simulate_linear_sem(W_true, n, sem_type)
-    X = ground_truth_X[:, :, 0]
+    X = ground_truth_X[:, :, 0]  #（数据-均值）/标准差
 
     # np.savetxt('X.csv', X, delimiter=',')
 
@@ -118,7 +118,7 @@ if __name__ == '__main__':
     print(acc)
     write_to_csv(acc, 'notears.csv')
 
-    # B_true = utils.simulate_dag(d, s0, graph_type)
+    B_true = utils.simulate_dag(d, s0, graph_type)
     # W_true_2 = utils.simulate_parameter(B_true)
     # X_2 = utils.simulate_linear_sem(W_true_2, n, sem_type)
     # W_est_2 = notears_linear(X_2, lambda1=0.1, loss_type='l2')
