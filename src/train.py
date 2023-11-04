@@ -591,7 +591,7 @@ try:
     print(nx.to_numpy_array(ground_truth_G))
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(best_NLL_graph))
     if args.optimizer == 'LBFGS':
-        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_ELBO_graph.csv')
+        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_NLL_graph.csv')
     else:
         write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_NLL_graph.csv')
     print('Best NLL Graph Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
@@ -600,7 +600,7 @@ try:
     print(nx.to_numpy_array(ground_truth_G))
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(best_MSE_graph))
     if args.optimizer == 'LBFGS':
-        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_ELBO_graph.csv')
+        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_MSE_graphh.csv')
     else:
         write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_MSE_graph.csv')
     print('Best MSE Graph Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
@@ -610,7 +610,7 @@ try:
     # print(graph)
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(graph))
     if args.optimizer == 'LBFGS':
-        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_ELBO_graph.csv')
+        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold01.csv')
     else:
         write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold01.csv')
     print('threshold 0.1, Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
@@ -619,7 +619,7 @@ try:
     # print(graph)
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(graph))
     if args.optimizer == 'LBFGS':
-        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_ELBO_graph.csv')
+        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold02.csv')
     else:
         write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold02.csv')
     print('threshold 0.2, Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
@@ -628,7 +628,7 @@ try:
     # print(graph)
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(graph))
     if args.optimizer == 'LBFGS':
-        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_ELBO_graph.csv')
+        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold03.csv')
     else:
         write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold03.csv')
     print('threshold 0.3, Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
@@ -649,7 +649,7 @@ except KeyboardInterrupt:
     print(nx.to_numpy_array(ground_truth_G))
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(best_NLL_graph))
     if args.optimizer == 'LBFGS':
-        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_ELBO_graph.csv')
+        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_NLL_graph.csv')
     else:
         write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_NLL_graph.csv')
     print('Best NLL Graph Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
@@ -658,7 +658,7 @@ except KeyboardInterrupt:
     print(nx.to_numpy_array(ground_truth_G))
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(best_MSE_graph))
     if args.optimizer == 'LBFGS':
-        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_ELBO_graph.csv')
+        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_MSE_graph.csv')
     else:
         write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_MSE_graph.csv')
     print('Best MSE Graph Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
@@ -668,7 +668,7 @@ except KeyboardInterrupt:
     # print(graph)
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(graph))
     if args.optimizer == 'LBFGS':
-        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_ELBO_graph.csv')
+        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold01.csv')
     else:
         write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold01.csv')
     print('threshold 0.1, Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
@@ -677,7 +677,7 @@ except KeyboardInterrupt:
     # print(graph)
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(graph))
     if args.optimizer == 'LBFGS':
-        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_ELBO_graph.csv')
+        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold02.csv')
     else:
         write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold02.csv')
     print('threshold 0.2, Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
@@ -686,7 +686,7 @@ except KeyboardInterrupt:
     # print(graph)
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(graph))
     if args.optimizer == 'LBFGS':
-        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_ELBO_graph.csv')
+        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold03.csv')
     else:
         write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold03.csv')
     print('threshold 0.3, Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
