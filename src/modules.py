@@ -1,5 +1,6 @@
 # DAG-GNN: modules.py
 # src/modules.py
+import sys
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -41,6 +42,7 @@ class MLPEncoder(nn.Module):
 
         if torch.sum(self.adj_A != self.adj_A):
             print('nan error \n')
+            sys.exit()
 
         # to amplify the value of A and accelerate convergence.
         adj_A1 = torch.sinh(3.*self.adj_A)
@@ -88,6 +90,7 @@ class MLPDEncoder(nn.Module):
 
         if torch.sum(self.adj_A != self.adj_A):
             print('nan error \n')
+            sys.exit()
 
         adj_A1 = torch.sinh(3.*self.adj_A)
 
@@ -125,6 +128,7 @@ class SEMEncoder(nn.Module):
 
         if torch.sum(self.adj_A != self.adj_A):
             print('nan error \n')
+            sys.exit()
 
         adj_A1 = torch.sinh(3.*self.adj_A)
 

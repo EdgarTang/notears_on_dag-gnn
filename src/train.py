@@ -5,10 +5,10 @@ Main function for traininng DAG-GNN
 
 '''
 
-
 from __future__ import division
 from __future__ import print_function
 
+import sys
 import time
 import argparse
 import pickle
@@ -30,12 +30,12 @@ parser = argparse.ArgumentParser()
 
 # -----------data parameters ------
 # configurations
-parser.add_argument('--data_type', type=str, default= 'synthetic',
+parser.add_argument('--data_type', type=str, default='synthetic',
                     choices=['synthetic', 'discrete', 'real'],
                     help='choosing which experiment to do.')
-parser.add_argument('--data_filename', type=str, default= 'alarm',
+parser.add_argument('--data_filename', type=str, default='alarm',
                     help='data file name containing the discrete files.')
-parser.add_argument('--data_dir', type=str, default= 'data/',
+parser.add_argument('--data_dir', type=str, default='data/',
                     help='data file name containing the discrete files.')
 parser.add_argument('--data_sample_size', type=int, default=100,
                     help='the number of samples of data')
@@ -51,34 +51,34 @@ parser.add_argument('--graph_linear_type', type=str, default='linear',
                     help='the synthetic data type: linear -> linear SEM, nonlinear_1 -> x=Acos(x+1)+z, nonlinear_2 -> x=2sin(A(x+0.5))+A(x+0.5)+z')
 parser.add_argument('--edge-types', type=int, default=2,
                     help='The number of edge types to infer.')
-parser.add_argument('--x_dims', type=int, default=1, #changed here
+parser.add_argument('--x_dims', type=int, default=1,  # changed here
                     help='The number of input dimensions: default 1.')
 parser.add_argument('--z_dims', type=int, default=1,
                     help='The number of latent variable dimensions: default the same as variable size.')
 
 # -----------training hyperparameters
-parser.add_argument('--optimizer', type = str, default = 'LBFGS',
-                    help = 'the choice of optimizer used')
-parser.add_argument('--graph_threshold', type=  float, default = 0.3,  # 0.3 is good, 0.2 is error prune
-                    help = 'threshold for learned adjacency matrix binarization')
-parser.add_argument('--tau_A', type = float, default=0.01,   ##todo  = notears lambda 矩阵稀疏程度
+parser.add_argument('--optimizer', type=str, default='LBFGS',
+                    help='the choice of optimizer used')
+parser.add_argument('--graph_threshold', type=float, default=0.3,  # 0.3 is good, 0.2 is error prune
+                    help='threshold for learned adjacency matrix binarization')
+parser.add_argument('--tau_A', type=float, default=0.01,  ##todo  = notears lambda 矩阵稀疏程度
                     help='coefficient for L-1 norm of A.')
-parser.add_argument('--lambda_A',  type = float, default= 0.,
+parser.add_argument('--lambda_A', type=float, default=0.,
                     help='coefficient for DAG constraint h(A).')
-parser.add_argument('--c_A',  type = float, default= 1,
+parser.add_argument('--c_A', type=float, default=1,
                     help='coefficient for absolute value h(A).')
-parser.add_argument('--use_A_connect_loss',  type = int, default= 0,
+parser.add_argument('--use_A_connect_loss', type=int, default=0,
                     help='flag to use A connect loss')
-parser.add_argument('--use_A_positiver_loss', type = int, default = 0,
-                    help = 'flag to enforce A must have positive values')
-
+parser.add_argument('--use_A_positiver_loss', type=int, default=0,
+                    help='flag to enforce A must have positive values')
 
 parser.add_argument('--no-cuda', action='store_true', default=True,
                     help='Disables CUDA training.')
 parser.add_argument('--seed', type=int, default=42, help='Random seed.')
-parser.add_argument('--epochs', type=int, default= 300,
+parser.add_argument('--epochs', type=int, default=300,
                     help='Number of epochs to train.')
-parser.add_argument('--batch-size', type=int, default = 100, # note: should be divisible by sample size, otherwise throw an error
+parser.add_argument('--batch-size', type=int, default=100,
+                    # note: should be divisible by sample size, otherwise throw an error
                     help='Number of samples per batch.')
 parser.add_argument('--lr', type=float, default=3e-3,  # basline rate = 1e-3
                     help='Initial learning rate.')
@@ -88,8 +88,8 @@ parser.add_argument('--decoder-hidden', type=int, default=64,
                     help='Number of hidden units.')
 parser.add_argument('--temp', type=float, default=0.5,
                     help='Temperature for Gumbel softmax.')
-parser.add_argument('--k_max_iter', type = int, default = 1e2,
-                    help ='the max iteration number for searching lambda and c')
+parser.add_argument('--k_max_iter', type=int, default=1e2,
+                    help='the max iteration number for searching lambda and c')
 
 parser.add_argument('--encoder', type=str, default='mlp',
                     help='Type of path encoder model (mlp, or sem).')
@@ -109,14 +109,13 @@ parser.add_argument('--load-folder', type=str, default='',
                     help='Where to load the trained model if finetunning. ' +
                          'Leave empty to train from scratch')
 
-
-parser.add_argument('--h_tol', type=float, default = 1e-8,
+parser.add_argument('--h_tol', type=float, default=1e-8,
                     help='the tolerance of error of h(A) to zero')
 parser.add_argument('--prediction-steps', type=int, default=10, metavar='N',
                     help='Num steps to predict before re-using teacher forcing.')
 parser.add_argument('--lr-decay', type=int, default=200,
                     help='After how epochs to decay LR by a factor of gamma.')
-parser.add_argument('--gamma', type=float, default= 1.0,
+parser.add_argument('--gamma', type=float, default=1.0,
                     help='LR decay factor.')
 parser.add_argument('--skip-first', action='store_true', default=False,
                     help='Skip first edge type in decoder, i.e. it represents no-edge.')
@@ -133,7 +132,6 @@ args = parser.parse_args()
 args.cuda = not args.no_cuda and torch.cuda.is_available()
 args.factor = not args.no_factor
 print(args)
-
 
 torch.manual_seed(args.seed)
 if args.cuda:
@@ -162,14 +160,13 @@ else:
     print("WARNING: No save_folder provided!" +
           "Testing (within this script) will throw an error.")
 
-
 # ================================================
 # get data: experiments = {synthetic SEM, ALARM}
 # ================================================
-train_loader, valid_loader, test_loader, ground_truth_G, ground_truth_X = load_data( args, args.batch_size, args.suffix)
-#===================================
+train_loader, valid_loader, test_loader, ground_truth_G, ground_truth_X = load_data(args, args.batch_size, args.suffix)
+# ===================================
 # load modules
-#===================================
+# ===================================
 # Generate off-diagonal interaction graph
 off_diag = np.ones([args.data_variable_size, args.data_variable_size]) - np.eye(args.data_variable_size)
 
@@ -182,30 +179,29 @@ rel_send = torch.DoubleTensor(rel_send)
 num_nodes = args.data_variable_size
 adj_A = np.zeros((num_nodes, num_nodes))
 
-
 if args.encoder == 'mlp':
     encoder = MLPEncoder(args.data_variable_size * args.x_dims, args.x_dims, args.encoder_hidden,
                          int(args.z_dims), adj_A,
-                         batch_size = args.batch_size,
-                         do_prob = args.encoder_dropout, factor = args.factor).double()
+                         batch_size=args.batch_size,
+                         do_prob=args.encoder_dropout, factor=args.factor).double()
 elif args.encoder == 'sem':
     encoder = SEMEncoder(args.data_variable_size * args.x_dims, args.encoder_hidden,
                          int(args.z_dims), adj_A,
-                         batch_size = args.batch_size,
-                         do_prob = args.encoder_dropout, factor = args.factor).double()
+                         batch_size=args.batch_size,
+                         do_prob=args.encoder_dropout, factor=args.factor).double()
 
 if args.decoder == 'mlp':
     decoder = MLPDecoder(args.data_variable_size * args.x_dims,
                          args.z_dims, args.x_dims, encoder,
-                         data_variable_size = args.data_variable_size,
-                         batch_size = args.batch_size,
+                         data_variable_size=args.data_variable_size,
+                         batch_size=args.batch_size,
                          n_hid=args.decoder_hidden,
                          do_prob=args.decoder_dropout).double()
 elif args.decoder == 'sem':
     decoder = SEMDecoder(args.data_variable_size * args.x_dims,
                          args.z_dims, 2, encoder,
-                         data_variable_size = args.data_variable_size,
-                         batch_size = args.batch_size,
+                         data_variable_size=args.data_variable_size,
+                         batch_size=args.batch_size,
                          n_hid=args.decoder_hidden,
                          do_prob=args.decoder_dropout).double()
 
@@ -217,17 +213,17 @@ if args.load_folder:
 
     args.save_folder = False
 
-#===================================
+# ===================================
 # set up training parameters
-#===================================
+# ===================================
 if args.optimizer == 'Adam':
-    optimizer = optim.Adam(list(encoder.parameters()) + list(decoder.parameters()),lr=args.lr)
+    optimizer = optim.Adam(list(encoder.parameters()) + list(decoder.parameters()), lr=args.lr)
 elif args.optimizer == 'LBFGS':
     optimizer = optim.LBFGS(list(encoder.parameters()) + list(decoder.parameters()),
-                           lr=args.lr)
+                            lr=args.lr)
 elif args.optimizer == 'SGD':
     optimizer = optim.SGD(list(encoder.parameters()) + list(decoder.parameters()),
-                           lr=args.lr)
+                          lr=args.lr)
 
 scheduler = lr_scheduler.StepLR(optimizer, step_size=args.lr_decay,
                                 gamma=args.gamma)
@@ -262,15 +258,17 @@ rel_send = Variable(rel_send)
 
 # compute constraint h(A) value
 def _h_A(A, m):
-    expm_A = matrix_poly(A*A, m)
+    expm_A = matrix_poly(A * A, m)
     h_A = torch.trace(expm_A) - m
     return h_A
 
-prox_plus = torch.nn.Threshold(0.,0.)
+
+prox_plus = torch.nn.Threshold(0., 0.)
+
 
 def stau(w, tau):
-    w1 = prox_plus(torch.abs(w)-tau)
-    return torch.sign(w)*w1
+    w1 = prox_plus(torch.abs(w) - tau)
+    return torch.sign(w) * w1
 
 
 def update_optimizer(optimizer, original_lr, c_A):
@@ -292,9 +290,10 @@ def update_optimizer(optimizer, original_lr, c_A):
 
     return optimizer, lr
 
-#===================================
+
+# ===================================
 # training:
-#===================================
+# ===================================
 
 def train(epoch, best_val_loss, ground_truth_G, lambda_A, c_A, optimizer):
     t = time.time()
@@ -307,10 +306,8 @@ def train(epoch, best_val_loss, ground_truth_G, lambda_A, c_A, optimizer):
     decoder.train()
     scheduler.step()
 
-
     # update optimizer
     optimizer, lr = update_optimizer(optimizer, args.lr, c_A)
-
 
     for batch_idx, (data, relations) in enumerate(train_loader):
 
@@ -323,13 +320,16 @@ def train(epoch, best_val_loss, ground_truth_G, lambda_A, c_A, optimizer):
 
         optimizer.zero_grad()
 
-        enc_x, logits, origin_A, adj_A_tilt_encoder, z_gap, z_positive, myA, Wa = encoder(data, rel_rec, rel_send)  # logits is of size: [num_sims, z_dims]
+        enc_x, logits, origin_A, adj_A_tilt_encoder, z_gap, z_positive, myA, Wa = encoder(data, rel_rec,
+                                                                                          rel_send)  # logits is of size: [num_sims, z_dims]
         edges = logits
 
-        dec_x, output, adj_A_tilt_decoder = decoder(data, edges, args.data_variable_size * args.x_dims, rel_rec, rel_send, origin_A, adj_A_tilt_encoder, Wa)
+        dec_x, output, adj_A_tilt_decoder = decoder(data, edges, args.data_variable_size * args.x_dims, rel_rec,
+                                                    rel_send, origin_A, adj_A_tilt_encoder, Wa)
 
         if torch.sum(output != output):
             print('nan error\n')
+            sys.exit()
 
         target = data
         preds = output
@@ -345,7 +345,7 @@ def train(epoch, best_val_loss, ground_truth_G, lambda_A, c_A, optimizer):
         loss = loss_kl + loss_nll
 
         # add A loss
-        one_adj_A = origin_A # torch.mean(adj_A_tilt_decoder, dim =0)
+        one_adj_A = origin_A  # torch.mean(adj_A_tilt_decoder, dim =0)
         sparse_loss = args.tau_A * torch.sum(torch.abs(one_adj_A))
 
         # other loss term
@@ -359,37 +359,72 @@ def train(epoch, best_val_loss, ground_truth_G, lambda_A, c_A, optimizer):
 
         # compute h(A)
         h_A = _h_A(origin_A, args.data_variable_size)
-        loss += lambda_A * h_A + 0.5 * c_A * h_A * h_A + 100. * torch.trace(origin_A*origin_A) + sparse_loss #+  0.01 * torch.sum(variance * variance)
-
+        loss += lambda_A * h_A + 0.5 * c_A * h_A * h_A + 100. * torch.trace(
+            origin_A * origin_A) + sparse_loss  # +  0.01 * torch.sum(variance * variance)
 
         loss.backward()
 
         if args.optimizer == 'LBFGS':
             def closure():
                 optimizer.zero_grad()
-                enc_x, logits, origin_A, adj_A_tilt_encoder, z_gap, z_positive, myA, Wa = encoder(data, rel_rec, rel_send)
-                dec_x, output, adj_A_tilt_decoder = decoder(data, edges, args.data_variable_size * args.x_dims, rel_rec,
-                                                            rel_send, origin_A, adj_A_tilt_encoder, Wa)
-                loss_nll = nll_gaussian(preds, target, variance)
-                loss_kl = kl_gaussian_sem(logits)
-                loss = loss_kl + loss_nll
-                # ... 添加其他损失项 ...
-                loss.backward()
-                return loss
+
+                # 用模型生成预测
+                enc_x, logits, origin_A, adj_A_tilt_encoder, z_gap, z_positive, myA, Wa = encoder(data, rel_rec,
+                                                                                                  rel_send)
+                dec_x, output, adj_A_tilt_decoder = decoder(data, logits, args.data_variable_size * args.x_dims,
+                                                            rel_rec, rel_send, origin_A, adj_A_tilt_encoder, Wa)
+
+                # 计算基本的损失项
+                loss_nll = nll_gaussian(output, target, variance)  # 假设你有这个函数计算高斯的负对数似然
+                loss_kl = kl_gaussian_sem(logits)  # 假设你有这个函数计算KL散度
+
+                # 计算ELBO损失
+                loss_elbo = loss_nll + loss_kl
+
+                # 稀疏性损失
+                sparse_loss = args.tau_A * torch.sum(torch.abs(origin_A))
+
+                # 图结构的约束损失
+                h_A = _h_A(origin_A, args.data_variable_size)
+                graph_constraint_loss = lambda_A * h_A + 0.5 * c_A * h_A * h_A
+
+                # 如果你还有其他损失项，继续添加
+                # for example, connect_gap or positive_gap if using A_connect_loss or A_positive_loss
+                if args.use_A_connect_loss:
+                    connect_gap = A_connect_loss(origin_A, args.graph_threshold, z_gap)
+                    graph_constraint_loss += lambda_A * connect_gap + 0.5 * c_A * connect_gap * connect_gap
+
+                if args.use_A_positiver_loss:
+                    positive_gap = A_positive_loss(origin_A, z_positive)
+                    graph_constraint_loss += .1 * (lambda_A * positive_gap + 0.5 * c_A * positive_gap * positive_gap)
+
+                # 总损失
+                total_loss = loss_elbo + sparse_loss + graph_constraint_loss
+
+                # 反向传播
+                total_loss.backward()
+
+                # 对于正则化项，如需要，还可以进行梯度截断或者其他操作
+                # torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm)
+
+                # 返回损失供LBFGS优化器使用
+                return total_loss
+
+            loss = optimizer.step(closure)
         else:
             loss = optimizer.step()
 
-        myA.data = stau(myA.data, args.tau_A*lr)
+        myA.data = stau(myA.data, args.tau_A * lr)
 
         if torch.sum(origin_A != origin_A):
             print('nan error\n')
+            sys.exit()
 
         # compute metrics
         graph = origin_A.data.clone().numpy()
         graph[np.abs(graph) < args.graph_threshold] = 0
 
         fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(graph))
-
 
         mse_train.append(F.mse_loss(preds, target).item())
         nll_train.append(loss_nll.item())
@@ -405,7 +440,7 @@ def train(epoch, best_val_loss, ground_truth_G, lambda_A, c_A, optimizer):
     print('Epoch: {:04d}'.format(epoch),
           'nll_train: {:.10f}'.format(np.mean(nll_train)),
           'kl_train: {:.10f}'.format(np.mean(kl_train)),
-          'ELBO_loss: {:.10f}'.format(np.mean(kl_train)  + np.mean(nll_train)),
+          'ELBO_loss: {:.10f}'.format(np.mean(kl_train) + np.mean(nll_train)),
           'mse_train: {:.10f}'.format(np.mean(mse_train)),
           'shd_trian: {:.10f}'.format(np.mean(shd_trian)),
           'time: {:.4f}s'.format(time.time() - t))
@@ -416,7 +451,7 @@ def train(epoch, best_val_loss, ground_truth_G, lambda_A, c_A, optimizer):
         print('Epoch: {:04d}'.format(epoch),
               'nll_train: {:.10f}'.format(np.mean(nll_train)),
               'kl_train: {:.10f}'.format(np.mean(kl_train)),
-              'ELBO_loss: {:.10f}'.format(np.mean(kl_train)  + np.mean(nll_train)),
+              'ELBO_loss: {:.10f}'.format(np.mean(kl_train) + np.mean(nll_train)),
               'mse_train: {:.10f}'.format(np.mean(mse_train)),
               'shd_trian: {:.10f}'.format(np.mean(shd_trian)),
               'time: {:.4f}s'.format(time.time() - t), file=log)
@@ -425,12 +460,12 @@ def train(epoch, best_val_loss, ground_truth_G, lambda_A, c_A, optimizer):
     if 'graph' not in vars():
         print('error on assign')
 
+    return np.mean(np.mean(kl_train) + np.mean(nll_train)), np.mean(nll_train), np.mean(mse_train), graph, origin_A
 
-    return np.mean(np.mean(kl_train)  + np.mean(nll_train)), np.mean(nll_train), np.mean(mse_train), graph, origin_A
 
-#===================================
+# ===================================
 # main
-#===================================
+# ===================================
 
 t_total = time.time()
 best_ELBO_loss = np.inf
@@ -447,6 +482,7 @@ h_A_new = torch.tensor(1.)
 h_tol = args.h_tol
 k_max_iter = int(args.k_max_iter)
 h_A_old = np.inf
+
 
 def write_to_csv(accuracies, filename):
     output_dir = 'out'
@@ -476,11 +512,31 @@ def write_to_csv(accuracies, filename):
         writer.writerows(data)
 
 
+def write_to_csv_last(accuracies, filename):
+    output_dir = 'out'
+    os.makedirs(output_dir, exist_ok=True)
+
+    filepath = os.path.join(output_dir, filename)
+
+    if os.path.exists(filepath) and os.path.getsize(filepath) > 0:
+        with open(filepath, 'r', newline='') as file:
+            reader = csv.reader(file)
+            headers = next(reader)  #headers
+
+    new_row = [args.data_variable_size]  # col 1 = node
+    for header in headers[1:]:  # 从accuracies from col 2
+        new_row.append(accuracies.get(header, 'error'))
+
+    with open(filepath, 'a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(new_row)
+
 try:
     for step_k in range(k_max_iter):
         while c_A < 1e+20:
             for epoch in range(args.epochs):
-                ELBO_loss, NLL_loss, MSE_loss, graph, origin_A = train(epoch, best_ELBO_loss, ground_truth_G, lambda_A, c_A, optimizer)
+                ELBO_loss, NLL_loss, MSE_loss, graph, origin_A = train(epoch, best_ELBO_loss, ground_truth_G, lambda_A,
+                                                                       c_A, optimizer)
                 if ELBO_loss < best_ELBO_loss:
                     best_ELBO_loss = ELBO_loss
                     best_epoch = epoch
@@ -505,7 +561,7 @@ try:
             A_new = origin_A.data.clone()
             h_A_new = _h_A(A_new, args.data_variable_size)
             if h_A_new.item() > 0.25 * h_A_old:
-                c_A*=10
+                c_A *= 10
             else:
                 break
 
@@ -517,47 +573,64 @@ try:
         if h_A_new.item() <= h_tol:
             break
 
-
     if args.save_folder:
         print("Best Epoch: {:04d}".format(best_epoch), file=log)
         log.flush()
 
     # test()
-    print (best_ELBO_graph)
+    print(best_ELBO_graph)
     print(nx.to_numpy_array(ground_truth_G))
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(best_ELBO_graph))
-    write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_ELBO_graph.csv')
+    if args.optimizer == 'LBFGS':
+        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_ELBO_graph.csv')
+    else:
+        write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_ELBO_graph.csv')
     print('Best ELBO Graph Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
 
     print(best_NLL_graph)
     print(nx.to_numpy_array(ground_truth_G))
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(best_NLL_graph))
-    write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_NLL_graph.csv')
+    if args.optimizer == 'LBFGS':
+        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_ELBO_graph.csv')
+    else:
+        write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_NLL_graph.csv')
     print('Best NLL Graph Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
 
-    print (best_MSE_graph)
+    print(best_MSE_graph)
     print(nx.to_numpy_array(ground_truth_G))
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(best_MSE_graph))
-    write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_MSE_graph.csv')
+    if args.optimizer == 'LBFGS':
+        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_ELBO_graph.csv')
+    else:
+        write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_MSE_graph.csv')
     print('Best MSE Graph Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
 
     graph = origin_A.data.clone().numpy()
     graph[np.abs(graph) < 0.1] = 0
     # print(graph)
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(graph))
-    write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold01.csv')
+    if args.optimizer == 'LBFGS':
+        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_ELBO_graph.csv')
+    else:
+        write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold01.csv')
     print('threshold 0.1, Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
 
     graph[np.abs(graph) < 0.2] = 0
     # print(graph)
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(graph))
-    write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold02.csv')
+    if args.optimizer == 'LBFGS':
+        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_ELBO_graph.csv')
+    else:
+        write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold02.csv')
     print('threshold 0.2, Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
 
     graph[np.abs(graph) < 0.3] = 0
     # print(graph)
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(graph))
-    write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold03.csv')
+    if args.optimizer == 'LBFGS':
+        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_ELBO_graph.csv')
+    else:
+        write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold03.csv')
     print('threshold 0.3, Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
 
 
@@ -566,36 +639,54 @@ except KeyboardInterrupt:
     print(best_ELBO_graph)
     print(nx.to_numpy_array(ground_truth_G))
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(best_ELBO_graph))
-    write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_ELBO_graph.csv')
+    if args.optimizer == 'LBFGS':
+        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_ELBO_graph.csv')
+    else:
+        write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_ELBO_graph.csv')
     print('Best ELBO Graph Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
 
     print(best_NLL_graph)
     print(nx.to_numpy_array(ground_truth_G))
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(best_NLL_graph))
-    write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_NLL_graph.csv')
+    if args.optimizer == 'LBFGS':
+        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_ELBO_graph.csv')
+    else:
+        write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_NLL_graph.csv')
     print('Best NLL Graph Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
 
     print(best_MSE_graph)
     print(nx.to_numpy_array(ground_truth_G))
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(best_MSE_graph))
-    write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_MSE_graph.csv')
+    if args.optimizer == 'LBFGS':
+        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_ELBO_graph.csv')
+    else:
+        write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_MSE_graph.csv')
     print('Best MSE Graph Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
 
     graph = origin_A.data.clone().numpy()
     graph[np.abs(graph) < 0.1] = 0
     # print(graph)
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(graph))
-    write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold01.csv')
+    if args.optimizer == 'LBFGS':
+        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_ELBO_graph.csv')
+    else:
+        write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold01.csv')
     print('threshold 0.1, Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
 
     graph[np.abs(graph) < 0.2] = 0
     # print(graph)
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(graph))
-    write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold02.csv')
+    if args.optimizer == 'LBFGS':
+        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_ELBO_graph.csv')
+    else:
+        write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold02.csv')
     print('threshold 0.2, Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
 
     graph[np.abs(graph) < 0.3] = 0
     # print(graph)
     fdr, tpr, fpr, shd, nnz = count_accuracy(ground_truth_G, nx.DiGraph(graph))
-    write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold03.csv')
+    if args.optimizer == 'LBFGS':
+        write_to_csv_last({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_best_ELBO_graph.csv')
+    else:
+        write_to_csv({'fdr': fdr, 'tpr': tpr, 'fpr': fpr, 'shd': shd, 'nnz': nnz}, 'DAG-GNN_threshold03.csv')
     print('threshold 0.3, Accuracy: fdr', fdr, ' tpr ', tpr, ' fpr ', fpr, 'shd', shd, 'nnz', nnz)
