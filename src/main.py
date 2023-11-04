@@ -109,7 +109,7 @@ if __name__ == '__main__':
 
     # np.savetxt('X.csv', X, delimiter=',')
 
-    W_est = notears_linear(X, lambda1=0.1, loss_type='l2')
+    W_est = notears_linear(X, lambda1=0.01, loss_type='l2')
 
     assert utils.is_dag(W_est)
     # np.savetxt('W_est.csv', W_est, delimiter=',')

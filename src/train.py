@@ -61,7 +61,7 @@ parser.add_argument('--optimizer', type = str, default = 'LBFGS',
                     help = 'the choice of optimizer used')
 parser.add_argument('--graph_threshold', type=  float, default = 0.3,  # 0.3 is good, 0.2 is error prune
                     help = 'threshold for learned adjacency matrix binarization')
-parser.add_argument('--tau_A', type = float, default=0.1,   ##todo  = notears lambda 矩阵稀疏程度
+parser.add_argument('--tau_A', type = float, default=0.01,   ##todo  = notears lambda 矩阵稀疏程度
                     help='coefficient for L-1 norm of A.')
 parser.add_argument('--lambda_A',  type = float, default= 0.,
                     help='coefficient for DAG constraint h(A).')
