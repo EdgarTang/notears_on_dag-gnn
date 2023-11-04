@@ -57,7 +57,7 @@ parser.add_argument('--z_dims', type=int, default=1,
                     help='The number of latent variable dimensions: default the same as variable size.')
 
 # -----------training hyperparameters
-parser.add_argument('--optimizer', type = str, default = 'Adam',
+parser.add_argument('--optimizer', type = str, default = 'LBFGS',
                     help = 'the choice of optimizer used')
 parser.add_argument('--graph_threshold', type=  float, default = 0.3,  # 0.3 is good, 0.2 is error prune
                     help = 'threshold for learned adjacency matrix binarization')
@@ -363,7 +363,21 @@ def train(epoch, best_val_loss, ground_truth_G, lambda_A, c_A, optimizer):
 
 
         loss.backward()
-        loss = optimizer.step()
+
+        if args.optimizer == 'LBFGS':
+            def closure():
+                optimizer.zero_grad()
+                enc_x, logits, origin_A, adj_A_tilt_encoder, z_gap, z_positive, myA, Wa = encoder(data, rel_rec, rel_send)
+                dec_x, output, adj_A_tilt_decoder = decoder(data, edges, args.data_variable_size * args.x_dims, rel_rec,
+                                                            rel_send, origin_A, adj_A_tilt_encoder, Wa)
+                loss_nll = nll_gaussian(preds, target, variance)
+                loss_kl = kl_gaussian_sem(logits)
+                loss = loss_kl + loss_nll
+                # ... 添加其他损失项 ...
+                loss.backward()
+                return loss
+        else:
+            loss = optimizer.step()
 
         myA.data = stau(myA.data, args.tau_A*lr)
 
