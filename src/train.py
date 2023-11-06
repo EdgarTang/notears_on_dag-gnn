@@ -57,7 +57,7 @@ parser.add_argument('--z_dims', type=int, default=1,
                     help='The number of latent variable dimensions: default the same as variable size.')
 
 # -----------training hyperparameters
-parser.add_argument('--optimizer', type=str, default='LBFGS',
+parser.add_argument('--optimizer', type=str, default='Adam',
                     help='the choice of optimizer used')
 parser.add_argument('--graph_threshold', type=float, default=0.3,  # 0.3 is good, 0.2 is error prune
                     help='threshold for learned adjacency matrix binarization')
