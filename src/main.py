@@ -104,7 +104,14 @@ def notears():
     # np.savetxt('W_true.csv', W_true, delimiter=',')
 
     # X = utils.simulate_linear_sem(W_true, n, sem_type)
-    X = ground_truth_X[:, :, 0]  #（数据-均值）/标准差
+
+    # 原来的代码
+    # X = ground_truth_X[:, :, 0]  #（数据-均值）/标准差
+
+    # 新的代码
+    means = np.mean(ground_truth_X[:, :, 0], axis=0)
+    stds = np.std(ground_truth_X[:, :, 0], axis=0)
+    X = (ground_truth_X[:, :, 0] - means) / (stds + 1e-8)  # 防止除以零
 
     # np.savetxt('X.csv', X, delimiter=',')
 
