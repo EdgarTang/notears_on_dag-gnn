@@ -106,7 +106,7 @@ def notears():
     # X = utils.simulate_linear_sem(W_true, n, sem_type)
 
     # 原来的代码
-    # X = ground_truth_X[:, :, 0]  #（数据-均值）/标准差
+    # X = ground_truth_X[:, :, 0]
 
     # 新的代码
     means = np.mean(ground_truth_X[:, :, 0], axis=0)
